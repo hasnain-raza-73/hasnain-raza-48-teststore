@@ -1,0 +1,875 @@
+{%- liquid
+  assign section_id = 'GiftGuide-' | append: section.id
+  assign fetch_priority = 'auto'
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+-%}
+
+<div
+  id="{{ section_id }}"
+  class="gift-guide"
+  style="
+    --gift-guide-min-height: {{ section.settings.min_height }}svh;
+    --gift-guide-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --gift-guide-top-bar-bg: {{ section.settings.top_bar_bg_color }};
+    --gift-guide-nav-btn-bg: {{ section.settings.nav_button_color }};
+    --gift-guide-heading-size: {{ section.settings.heading_size }}px;
+    --gift-guide-mobile-heading-size: {{ section.settings.mobile_heading_size }}px;
+    --gift-guide-mobile-subheading-size: {{ section.settings.mobile_subheading_size }}px;
+    --gift-guide-mobile-btn-font-size: {{ section.settings.mobile_btn_font_size }}px;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+
+  {%- comment -%} ── TOP BAR (desktop only) ── {%- endcomment -%}
+  {%- if section.settings.show_top_bar -%}
+    <div class="gift-guide__top-bar">
+      <div class="gift-guide__top-bar-inner">
+
+        <span class="gift-guide__brand-name">
+          <svg width="152" height="19" viewBox="0 0 152 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="{{ section.settings.brand_name | escape }}" role="img">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M136.276 0L148.337 12.0609V0.724644L148.7 0.361705H151.081L151.444 0.724644V18.9975H150.874L139.02 7.14398V18.6358L138.657 18.9975H136.276L135.914 18.6358V0.361705L136.276 0Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M80.0215 0L84.7323 11.3635L89.4431 0H92.8071L85.094 18.6371L84.7323 19L84.3693 18.6371L76.6562 0H80.0215Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M107.866 0C109.678 0 111.396 0.946852 112.343 2.32948L110.532 4.14171H109.962C109.586 3.33929 108.761 2.84796 107.866 2.84796C106.8 2.84796 105.801 3.72445 105.742 4.84043C105.699 5.67988 106.084 6.20454 106.779 6.65265C107.527 7.13534 107.833 7.33656 108.849 7.89455C109.957 8.50315 112.758 9.6969 112.758 12.8387C112.758 15.936 110.169 18.8173 106.83 18.8173C106.401 18.8173 105.625 18.7692 105.045 18.6358C103.409 18.2396 102.417 17.6211 101.344 16.3582L103.673 13.9769L104.476 14.6497C104.837 14.9336 105.632 15.5052 106.389 15.6076C107.927 15.8163 108.959 14.799 109.159 13.7954C109.319 13.0029 109.117 11.8202 107.84 11.2079C107.84 11.2079 105.536 9.92775 104.526 9.34384C103.498 8.74881 102.404 7.12423 102.404 5.17744C102.404 3.72815 103.068 2.32454 104.139 1.34683C104.966 0.588851 106.1 0 107.866 0Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M98.2778 0V18.2741L97.9149 18.6358H95.1719V0.362939L95.5336 0H98.2778Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M124.244 0C126.715 0 129.085 0.981706 130.832 2.72915C132.58 4.4766 133.562 6.84665 133.562 9.31791C133.562 11.7892 132.58 14.1592 130.832 15.9067C129.085 17.6541 126.715 18.6358 124.244 18.6358C121.772 18.6358 119.402 17.6541 117.655 15.9067C115.907 14.1592 114.926 11.7892 114.926 9.31791C114.926 6.84665 115.907 4.4766 117.655 2.72915C119.402 0.981706 121.772 0 124.244 0ZM124.242 3.10721C123.427 3.10729 122.619 3.26806 121.865 3.58034C121.111 3.89263 120.427 4.35031 119.85 4.92726C118.685 6.09245 118.03 7.67271 118.031 9.32038C118.031 10.9681 118.685 12.5482 119.851 13.7131C121.016 14.8781 122.596 15.5325 124.244 15.5323C125.891 15.5323 127.472 14.8778 128.637 13.7127C129.802 12.5476 130.456 10.9674 130.456 9.31976C130.456 7.67209 129.802 6.0919 128.637 4.92682C127.472 3.76174 125.891 3.10721 124.244 3.10721H124.242Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M25.0374 0C26.8497 0 28.5681 0.946852 29.5149 2.32948L27.7039 4.14171H27.1336C26.7583 3.33929 25.9324 2.84796 25.0374 2.84796C23.9721 2.84796 22.9734 3.72445 22.9141 4.84043C22.8709 5.67988 23.2561 6.20454 23.9511 6.65265C24.6992 7.13534 25.0053 7.33656 26.0213 7.89455C27.1286 8.50315 29.9297 9.6969 29.9297 12.8387C29.9297 15.936 27.341 18.8173 24.0017 18.8173C23.5733 18.8173 22.7968 18.7692 22.2166 18.6358C20.5809 18.2396 19.5884 17.6211 18.5156 16.3582L20.8451 13.9769L21.6475 14.6497C22.0092 14.9336 22.8042 15.5052 23.561 15.6076C25.0991 15.8163 26.1312 14.799 26.3312 13.7954C26.4904 13.0029 26.2892 11.8202 25.0115 11.2079C25.0115 11.2079 22.7079 9.92775 21.6981 9.34384C20.6698 8.74881 19.5761 7.12423 19.5761 5.17744C19.5761 3.72815 20.2402 2.32454 21.3105 1.34683C22.1376 0.588851 23.2721 0 25.0374 0Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M38.6195 0C40.4317 0 42.1501 0.946852 43.0969 2.32948L41.2859 4.14171H40.7156C40.3403 3.33929 39.5145 2.84796 38.6195 2.84796C37.5541 2.84796 36.5554 3.72445 36.4961 4.84043C36.4529 5.67988 36.8381 6.20454 37.5331 6.65265C38.2812 7.13534 38.5874 7.33656 39.6033 7.89455C40.7107 8.50315 43.5117 9.6969 43.5117 12.8387C43.5117 15.936 40.923 18.8173 37.5837 18.8173C37.1554 18.8173 36.3789 18.7692 35.7987 18.6358C34.163 18.2396 33.1704 17.6211 32.0977 16.3582L34.4271 13.9769L35.2296 14.6497C35.5913 14.9336 36.3863 15.5052 37.143 15.6076C38.6812 15.8163 39.7132 14.799 39.9132 13.7954C40.0724 13.0029 39.8712 11.8202 38.5935 11.2079C38.5935 11.2079 36.29 9.92775 35.2802 9.34384C34.2518 8.74881 33.1581 7.12423 33.1581 5.17744C33.1581 3.72815 33.8222 2.32454 34.8925 1.34683C35.7196 0.588851 36.8541 0 38.6195 0Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.4497 0V18.2741L15.0868 18.6358H12.3438V0.362939L12.7055 0H15.4497Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M54.9937 0C57.465 0 59.835 0.981706 61.5825 2.72915C63.3299 4.4766 64.3116 6.84665 64.3116 9.31791C64.3116 11.7892 63.3299 14.1592 61.5825 15.9067C59.835 17.6541 57.465 18.6358 54.9937 18.6358C52.5224 18.6358 50.1524 17.6541 48.4049 15.9067C46.6575 14.1592 45.6758 11.7892 45.6758 9.31791C45.6758 6.84665 46.6575 4.4766 48.4049 2.72915C50.1524 0.981706 52.5224 0 54.9937 0ZM54.9925 3.10721C54.1766 3.10729 53.3688 3.26806 52.6151 3.58034C51.8614 3.89263 51.1765 4.35031 50.5997 4.92726C49.4347 6.09245 48.7804 7.67271 48.7805 9.32038C48.7807 10.9681 49.4354 12.5482 50.6006 13.7131C51.7658 14.8781 53.346 15.5325 54.9937 15.5323C56.6414 15.5323 58.2216 14.8778 59.3866 13.7127C60.5517 12.5476 61.2063 10.9674 61.2063 9.31976C61.2063 7.67209 60.5517 6.0919 59.3866 4.92682C58.2216 3.76174 56.6414 3.10721 54.9937 3.10721H54.9925Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.31791 0V2.74427L8.95497 3.10597H6.21194V18.6358H3.10597V3.10597H0V0.362939L0.362938 0H9.31791Z" fill="currentColor"/>
+          </svg>
+        </span>
+
+        {%- if section.settings.tagline != blank -%}
+          <span class="gift-guide__tagline">
+            {{- section.settings.tagline | escape -}}
+          </span>
+        {%- endif -%}
+
+        {%- if section.settings.nav_button_label != blank -%}
+          <a
+            class="gift-guide__nav-btn"
+            {% if section.settings.nav_button_url != blank %}
+              href="{{ section.settings.nav_button_url }}"
+            {% else %}
+              href="#"
+            {% endif %}
+          >
+            {{- section.settings.nav_button_label | escape -}}
+            <span class="gift-guide__arrow" aria-hidden="true">
+              <svg width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.75 4.77298L7.37629e-08 4.77298L-7.37629e-08 6.27298L0.75 6.27298L0.75 4.77298ZM25.2803 6.05331C25.5732 5.76042 25.5732 5.28554 25.2803 4.99265L20.5074 0.21968C20.2145 -0.073213 19.7396 -0.0732131 19.4467 0.21968C19.1538 0.512574 19.1538 0.987447 19.4467 1.28034L23.6893 5.52298L19.4467 9.76562C19.1538 10.0585 19.1538 10.5334 19.4467 10.8263C19.7396 11.1192 20.2145 11.1192 20.5074 10.8263L25.2803 6.05331ZM0.75 6.27298L24.75 6.27298L24.75 4.77298L0.75 4.77298L0.75 6.27298Z" fill="currentColor"/>
+              </svg>
+            </span>
+          </a>
+        {%- endif -%}
+
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── MOBILE TOP BAR (mobile only) ── {%- endcomment -%}
+  <div class="gift-guide__mobile-top-bar">
+    <button class="gift-guide__hamburger" aria-label="Open menu" onclick="document.querySelector('details-disclosure button, .header__icon--menu, [data-drawer-toggle]')?.click()">
+      <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 6H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M1 1H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M1 11H19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="gift-guide__mobile-logo">
+      <svg width="152" height="19" viewBox="0 0 152 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="{{ section.settings.brand_name | escape }}" role="img">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M136.276 0L148.337 12.0609V0.724644L148.7 0.361705H151.081L151.444 0.724644V18.9975H150.874L139.02 7.14398V18.6358L138.657 18.9975H136.276L135.914 18.6358V0.361705L136.276 0Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M80.0215 0L84.7323 11.3635L89.4431 0H92.8071L85.094 18.6371L84.7323 19L84.3693 18.6371L76.6562 0H80.0215Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M107.866 0C109.678 0 111.396 0.946852 112.343 2.32948L110.532 4.14171H109.962C109.586 3.33929 108.761 2.84796 107.866 2.84796C106.8 2.84796 105.801 3.72445 105.742 4.84043C105.699 5.67988 106.084 6.20454 106.779 6.65265C107.527 7.13534 107.833 7.33656 108.849 7.89455C109.957 8.50315 112.758 9.6969 112.758 12.8387C112.758 15.936 110.169 18.8173 106.83 18.8173C106.401 18.8173 105.625 18.7692 105.045 18.6358C103.409 18.2396 102.417 17.6211 101.344 16.3582L103.673 13.9769L104.476 14.6497C104.837 14.9336 105.632 15.5052 106.389 15.6076C107.927 15.8163 108.959 14.799 109.159 13.7954C109.319 13.0029 109.117 11.8202 107.84 11.2079C107.84 11.2079 105.536 9.92775 104.526 9.34384C103.498 8.74881 102.404 7.12423 102.404 5.17744C102.404 3.72815 103.068 2.32454 104.139 1.34683C104.966 0.588851 106.1 0 107.866 0Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M98.2778 0V18.2741L97.9149 18.6358H95.1719V0.362939L95.5336 0H98.2778Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M124.244 0C126.715 0 129.085 0.981706 130.832 2.72915C132.58 4.4766 133.562 6.84665 133.562 9.31791C133.562 11.7892 132.58 14.1592 130.832 15.9067C129.085 17.6541 126.715 18.6358 124.244 18.6358C121.772 18.6358 119.402 17.6541 117.655 15.9067C115.907 14.1592 114.926 11.7892 114.926 9.31791C114.926 6.84665 115.907 4.4766 117.655 2.72915C119.402 0.981706 121.772 0 124.244 0ZM124.242 3.10721C123.427 3.10729 122.619 3.26806 121.865 3.58034C121.111 3.89263 120.427 4.35031 119.85 4.92726C118.685 6.09245 118.03 7.67271 118.031 9.32038C118.031 10.9681 118.685 12.5482 119.851 13.7131C121.016 14.8781 122.596 15.5325 124.244 15.5323C125.891 15.5323 127.472 14.8778 128.637 13.7127C129.802 12.5476 130.456 10.9674 130.456 9.31976C130.456 7.67209 129.802 6.0919 128.637 4.92682C127.472 3.76174 125.891 3.10721 124.244 3.10721H124.242Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M25.0374 0C26.8497 0 28.5681 0.946852 29.5149 2.32948L27.7039 4.14171H27.1336C26.7583 3.33929 25.9324 2.84796 25.0374 2.84796C23.9721 2.84796 22.9734 3.72445 22.9141 4.84043C22.8709 5.67988 23.2561 6.20454 23.9511 6.65265C24.6992 7.13534 25.0053 7.33656 26.0213 7.89455C27.1286 8.50315 29.9297 9.6969 29.9297 12.8387C29.9297 15.936 27.341 18.8173 24.0017 18.8173C23.5733 18.8173 22.7968 18.7692 22.2166 18.6358C20.5809 18.2396 19.5884 17.6211 18.5156 16.3582L20.8451 13.9769L21.6475 14.6497C22.0092 14.9336 22.8042 15.5052 23.561 15.6076C25.0991 15.8163 26.1312 14.799 26.3312 13.7954C26.4904 13.0029 26.2892 11.8202 25.0115 11.2079C25.0115 11.2079 22.7079 9.92775 21.6981 9.34384C20.6698 8.74881 19.5761 7.12423 19.5761 5.17744C19.5761 3.72815 20.2402 2.32454 21.3105 1.34683C22.1376 0.588851 23.2721 0 25.0374 0Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M38.6195 0C40.4317 0 42.1501 0.946852 43.0969 2.32948L41.2859 4.14171H40.7156C40.3403 3.33929 39.5145 2.84796 38.6195 2.84796C37.5541 2.84796 36.5554 3.72445 36.4961 4.84043C36.4529 5.67988 36.8381 6.20454 37.5331 6.65265C38.2812 7.13534 38.5874 7.33656 39.6033 7.89455C40.7107 8.50315 43.5117 9.6969 43.5117 12.8387C43.5117 15.936 40.923 18.8173 37.5837 18.8173C37.1554 18.8173 36.3789 18.7692 35.7987 18.6358C34.163 18.2396 33.1704 17.6211 32.0977 16.3582L34.4271 13.9769L35.2296 14.6497C35.5913 14.9336 36.3863 15.5052 37.143 15.6076C38.6812 15.8163 39.7132 14.799 39.9132 13.7954C40.0724 13.0029 39.8712 11.8202 38.5935 11.2079C38.5935 11.2079 36.29 9.92775 35.2802 9.34384C34.2518 8.74881 33.1581 7.12423 33.1581 5.17744C33.1581 3.72815 33.8222 2.32454 34.8925 1.34683C35.7196 0.588851 36.8541 0 38.6195 0Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.4497 0V18.2741L15.0868 18.6358H12.3438V0.362939L12.7055 0H15.4497Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M54.9937 0C57.465 0 59.835 0.981706 61.5825 2.72915C63.3299 4.4766 64.3116 6.84665 64.3116 9.31791C64.3116 11.7892 63.3299 14.1592 61.5825 15.9067C59.835 17.6541 57.465 18.6358 54.9937 18.6358C52.5224 18.6358 50.1524 17.6541 48.4049 15.9067C46.6575 14.1592 45.6758 11.7892 45.6758 9.31791C45.6758 6.84665 46.6575 4.4766 48.4049 2.72915C50.1524 0.981706 52.5224 0 54.9937 0ZM54.9925 3.10721C54.1766 3.10729 53.3688 3.26806 52.6151 3.58034C51.8614 3.89263 51.1765 4.35031 50.5997 4.92726C49.4347 6.09245 48.7804 7.67271 48.7805 9.32038C48.7807 10.9681 49.4354 12.5482 50.6006 13.7131C51.7658 14.8781 53.346 15.5325 54.9937 15.5323C56.6414 15.5323 58.2216 14.8778 59.3866 13.7127C60.5517 12.5476 61.2063 10.9674 61.2063 9.31976C61.2063 7.67209 60.5517 6.0919 59.3866 4.92682C58.2216 3.76174 56.6414 3.10721 54.9937 3.10721H54.9925Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.31791 0V2.74427L8.95497 3.10597H6.21194V18.6358H3.10597V3.10597H0V0.362939L0.362938 0H9.31791Z" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="gift-guide__mobile-top-spacer" aria-hidden="true"></span>
+  </div>
+
+  {%- comment -%} ── HERO ── {%- endcomment -%}
+  <div class="gift-guide__hero">
+
+    {%- comment -%}
+      Mobile text block — shown above the image on mobile, hidden on desktop.
+      Desktop text is inside the image overlay (.gift-guide__overlay-content).
+    {%- endcomment -%}
+    <div class="gift-guide__mobile-text">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="gift-guide__heading">
+          {{- section.settings.heading | escape -}}
+        </h2>
+      {%- endif -%}
+      {%- if section.settings.mobile_subheading != blank -%}
+        <div class="gift-guide__subheading rte">
+          {{- section.settings.mobile_subheading -}}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Image block — fills hero on desktop, natural height on mobile {%- endcomment -%}
+    <div class="gift-guide__image-block">
+
+      {%- comment -%} Background image {%- endcomment -%}
+      {%- if section.settings.background_image != blank -%}
+        {%- if section.settings.mobile_image != blank -%}
+          <picture>
+            <source
+              media="(max-width: 749px)"
+              srcset="
+                {{ section.settings.mobile_image | image_url: width: 416 }} 416w,
+                {{ section.settings.mobile_image | image_url: width: 600 }} 600w,
+                {{ section.settings.mobile_image | image_url: width: 800 }} 800w,
+                {{ section.settings.mobile_image | image_url: width: 1000 }} 1000w
+              "
+              sizes="100vw"
+              width="{{ section.settings.mobile_image.width }}"
+              height="{{ section.settings.mobile_image.height }}"
+            >
+            {{
+              section.settings.background_image
+              | image_url: width: 3840
+              | image_tag:
+                widths: '1200, 1600, 1920, 2560, 3840',
+                sizes: '100vw',
+                alt: section.settings.background_image.alt,
+                class: 'gift-guide__bg-img',
+                fetchpriority: fetch_priority
+            }}
+          </picture>
+        {%- else -%}
+          {{
+            section.settings.background_image
+            | image_url: width: 3840
+            | image_tag:
+              widths: '1200, 1600, 1920, 2560, 3840',
+              sizes: '100vw',
+              alt: section.settings.background_image.alt,
+              class: 'gift-guide__bg-img',
+              fetchpriority: fetch_priority
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'hero-apparel-1' | placeholder_svg_tag: 'gift-guide__bg-img gift-guide__bg-img--placeholder' }}
+      {%- endif -%}
+
+      {%- comment -%} Optional overlay {%- endcomment -%}
+      {%- if section.settings.overlay_opacity > 0 -%}
+        <div class="gift-guide__overlay" aria-hidden="true"></div>
+      {%- endif -%}
+
+      {%- comment -%} Desktop content — bottom left overlay {%- endcomment -%}
+      <div class="gift-guide__overlay-content">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="gift-guide__heading">
+            {{- section.settings.heading | escape -}}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <div class="gift-guide__subheading rte">
+            {{- section.settings.subheading -}}
+          </div>
+        {%- endif -%}
+        {%- if section.settings.button_label != blank -%}
+          <a
+            class="gift-guide__cta-btn"
+            {% if section.settings.button_url != blank %}
+              href="{{ section.settings.button_url }}"
+            {% else %}
+              href="#"
+            {% endif %}
+          >
+            <span>{{- section.settings.button_label | upcase | escape -}}</span>
+            <span class="gift-guide__arrow" aria-hidden="true">
+              <svg width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.75 4.77298L7.37629e-08 4.77298L-7.37629e-08 6.27298L0.75 6.27298L0.75 4.77298ZM25.2803 6.05331C25.5732 5.76042 25.5732 5.28554 25.2803 4.99265L20.5074 0.21968C20.2145 -0.073213 19.7396 -0.0732131 19.4467 0.21968C19.1538 0.512574 19.1538 0.987447 19.4467 1.28034L23.6893 5.52298L19.4467 9.76562C19.1538 10.0585 19.1538 10.5334 19.4467 10.8263C19.7396 11.1192 20.2145 11.1192 20.5074 10.8263L25.2803 6.05331ZM0.75 6.27298L24.75 6.27298L24.75 4.77298L0.75 4.77298L0.75 6.27298Z" fill="currentColor"/>
+              </svg>
+            </span>
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Mobile CTA button — centered on image, shown on mobile only {%- endcomment -%}
+      {%- if section.settings.button_label != blank -%}
+        <a
+          class="gift-guide__cta-btn gift-guide__cta-btn--mobile"
+          {% if section.settings.button_url != blank %}
+            href="{{ section.settings.button_url }}"
+          {% else %}
+            href="#"
+          {% endif %}
+        >
+          <span>{{- section.settings.button_label | upcase | escape -}}</span>
+          <span class="gift-guide__arrow" aria-hidden="true">
+            <svg width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.75 4.77298L7.37629e-08 4.77298L-7.37629e-08 6.27298L0.75 6.27298L0.75 4.77298ZM25.2803 6.05331C25.5732 5.76042 25.5732 5.28554 25.2803 4.99265L20.5074 0.21968C20.2145 -0.073213 19.7396 -0.0732131 19.4467 0.21968C19.1538 0.512574 19.1538 0.987447 19.4467 1.28034L23.6893 5.52298L19.4467 9.76562C19.1538 10.0585 19.1538 10.5334 19.4467 10.8263C19.7396 11.1192 20.2145 11.1192 20.5074 10.8263L25.2803 6.05331ZM0.75 6.27298L24.75 6.27298L24.75 4.77298L0.75 4.77298L0.75 6.27298Z" fill="currentColor"/>
+            </svg>
+          </span>
+        </a>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+  {%- comment -%} ── BOTTOM BAR ── {%- endcomment -%}
+  {%- if section.settings.show_bottom_bar -%}
+    {%- if section.settings.bottom_text != blank -%}
+      <div class="gift-guide__bottom-bar gift-guide__bottom-bar--desktop">
+        <span class="gift-guide__bottom-text">
+          {{- section.settings.bottom_text | upcase | escape -}}
+        </span>
+      </div>
+    {%- endif -%}
+    {%- if section.settings.mobile_bottom_text != blank -%}
+      <div class="gift-guide__bottom-bar gift-guide__bottom-bar--mobile">
+        <span class="gift-guide__bottom-text">
+          {{- section.settings.mobile_bottom_text | upcase | escape -}}
+        </span>
+      </div>
+    {%- else -%}
+      {%- if section.settings.bottom_text != blank -%}
+        {%- comment -%} fallback: reuse desktop text on mobile if no mobile text set {%- endcomment -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+
+</div>
+
+{% stylesheet %}
+  /* ─────────────────────────────────────────
+     GIFT GUIDE SECTION
+  ───────────────────────────────────────── */
+  .gift-guide {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    font-family: "Jost", var(--font-body--family, sans-serif);
+  }
+
+  /* ── TOP BAR ── */
+  .gift-guide__top-bar {
+    background: var(--gift-guide-top-bar-bg, #fff);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    width: 100%;
+  }
+
+  .gift-guide__top-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 65px;
+    gap: 16px;
+    background: #f5f5f5;
+}
+
+  .gift-guide__brand-name {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: #111;
+  }
+
+  .gift-guide__brand-name svg {
+    display: block;
+    width: 120px;
+    height: auto;
+  }
+
+  .gift-guide__tagline {
+    text-align: center;
+    flex: 1;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0px;
+    color: #000;
+    font-family: Jost;
+    line-height: 13.42px;
+}
+
+  .gift-guide__nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: #FFF544;
+    color: #111;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 11px 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity .2s;
+    line-height: 20.48px;
+  }
+
+  .gift-guide__nav-btn:hover {
+    opacity: 0.85;
+  }
+
+  /* ── HERO ── */
+  .gift-guide__hero {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Mobile text: hidden on desktop */
+  .gift-guide__mobile-text {
+    display: none;
+  }
+
+  /* Image block — full hero on desktop */
+  .gift-guide__image-block {
+    position: relative;
+    min-height: var(--gift-guide-min-height, 90svh);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .gift-guide__bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
+
+  .gift-guide__bg-img--placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Picture element inside image-block */
+  .gift-guide__image-block picture {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gift-guide__image-block picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
+
+  .gift-guide__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, var(--gift-guide-overlay-opacity, 0));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Desktop overlay content — bottom left */
+  .gift-guide__overlay-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 60px 65px;
+    max-width: 600px;
+    background: white;
+  }
+
+  .gift-guide__heading {
+    font-size: 70px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -.02em;
+    color: #111;
+    margin: 0;
+    font-family: 'Jost';
+}
+
+.gift-guide__subheading p {
+    font-family: 'Jost';
+    font-size: 20px;
+    line-height: 140%;
+    color: #111;
+    margin: 0;
+}
+
+  .gift-guide__cta-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #111;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 16px 28px;
+    margin-top: 8px;
+    transition: opacity .2s;
+    cursor: pointer;
+    font-family: 'Jost';
+    max-width: 220px;
+    text-align: center;
+    justify-content: center;
+    margin: 0;
+}
+
+  .gift-guide__cta-btn:hover {
+    opacity: 0.82;
+  }
+
+  /* Mobile CTA button — hidden on desktop */
+  .gift-guide__cta-btn--mobile {
+    display: none;
+  }
+
+  /* Mobile top bar — hidden on desktop */
+  .gift-guide__mobile-top-bar {
+    display: none;
+  }
+
+  .gift-guide__arrow {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 12px;
+    flex-shrink: 0;
+  }
+
+  .gift-guide__arrow svg {
+    display: block;
+  }
+
+  /* ── BOTTOM BAR ── */
+  .gift-guide__bottom-bar--mobile {
+    display: none;
+  }
+
+  .gift-guide__bottom-bar {
+    background: #F5F5F5;
+    border-top: 1px solid rgba(0, 0, 0, .08);
+    padding: 5px 28px;
+    text-align: center;
+}
+
+  .gift-guide__bottom-text {
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0px;
+    color: #000000;
+    font-family: 'Jost';
+    line-height: 13.42px;
+}
+
+  /* ── DESKTOP ── */
+  @media screen and (min-width: 750px) {
+    .gift-guide__top-bar {
+      display: block;
+    }
+
+    /* Mobile-only elements hidden on desktop */
+    .gift-guide__mobile-text {
+      display: none;
+    }
+
+    .gift-guide__cta-btn--mobile {
+      display: none;
+    }
+
+    /* Desktop overlay content visible */
+    .gift-guide__overlay-content {
+      display: flex;
+    }
+  }
+
+  /* ── MOBILE ── */
+  @media screen and (max-width: 749px) {
+    /* Hide desktop top bar on mobile */
+    .gift-guide__top-bar {
+      display: none;
+    }
+
+    /* Mobile top bar */
+    .gift-guide__mobile-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: #F5F5F5;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .gift-guide__hamburger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .gift-guide__mobile-logo {
+      display: inline-flex;
+      align-items: center;
+      color: #111;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .gift-guide__mobile-logo svg {
+      width: 110px;
+      height: auto;
+      display: block;
+    }
+
+    .gift-guide__mobile-top-spacer {
+      width: 28px;
+      flex-shrink: 0;
+    }
+
+    /* Mobile text block above image */
+    .gift-guide__mobile-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 24px 28px;
+      background: #fff;
+      gap: 16px;
+    }
+
+    .gift-guide__mobile-text .gift-guide__heading {
+      font-size: var(--gift-guide-mobile-heading-size, 30px);
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: 100%;
+    }
+
+    .gift-guide__mobile-text .gift-guide__subheading p {
+      font-size: var(--gift-guide-mobile-subheading-size, 16px);
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Image block — natural height on mobile */
+    .gift-guide__image-block {
+      min-height: 65vw;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    /* Hide desktop overlay content on mobile */
+    .gift-guide__overlay-content {
+      display: none;
+    }
+
+    /* Mobile CTA button — centered on image */
+    .gift-guide__cta-btn--mobile {
+      display: inline-flex;
+      position: relative;
+      z-index: 2;
+      margin: 0 auto 40px;
+      padding: 16px 40px;
+      justify-content: center;
+      font-size: var(--gift-guide-mobile-btn-font-size, 16px);
+    }
+
+    /* Bottom bar — swap desktop/mobile versions */
+    .gift-guide__bottom-bar--desktop {
+      display: none;
+    }
+
+    .gift-guide__bottom-bar--mobile {
+      display: block;
+    }
+
+    .gift-guide__bottom-bar {
+      padding: 14px 16px;
+    }
+
+    .gift-guide__bottom-text {
+      font-size: 14px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .gift-guide__mobile-text {
+      padding: 32px 20px 20px;
+    }
+
+    .gift-guide__image-block {
+      min-height: 65vw;
+    }
+
+    .gift-guide__cta-btn--mobile {
+      min-width: 75%;
+      margin-bottom: 32px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Gift Guide",
+  "tag": "section",
+  "class": "gift-guide-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Top Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_bar",
+      "label": "Show top bar",
+      "default": true,
+      "info": "Top bar is hidden on mobile automatically."
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name (accessibility label)",
+      "default": "TISSO VISON"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Center tagline",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "nav_button_label",
+      "label": "Button label",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "nav_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "top_bar_bg_color",
+      "label": "Top bar background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "nav_button_color",
+      "label": "Button color",
+      "default": "#F5E642"
+    },
+    {
+      "type": "header",
+      "content": "Hero Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image (desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Background image (mobile)",
+      "info": "Optional. Falls back to desktop image if left empty."
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Hero height (desktop)",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "svh",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "info": "Adds a dark overlay to improve text readability.",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (desktop)",
+      "min": 30,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading (desktop)",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "mobile_subheading",
+      "label": "Subheading (mobile)",
+      "info": "Shown above the image on mobile. If left empty, no subheading will appear on mobile.",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size (mobile)",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mobile_subheading_size",
+      "label": "Subheading size (mobile)",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_btn_font_size",
+      "label": "Button font size (mobile)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Bottom Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_bar",
+      "label": "Show bottom bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "bottom_text",
+      "label": "Bottom bar text (desktop)",
+      "default": "Sustainable, ethically made clothes in sizes XXS to 6XL"
+    },
+    {
+      "type": "text",
+      "id": "mobile_bottom_text",
+      "label": "Bottom bar text (mobile)",
+      "info": "If left empty, bottom bar will not appear on mobile.",
+      "default": "Sustainable, ethically made activewear"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Guide",
+      "category": "Banners",
+      "settings": {
+        "show_top_bar": true,
+        "brand_name": "TISSO VISON",
+        "tagline": "Find the ideal gift for your loved ones.",
+        "nav_button_label": "Choose Gift",
+        "nav_button_color": "#F5E642",
+        "min_height": 90,
+        "overlay_opacity": 0,
+        "heading": "The Gift Guide",
+        "heading_size": 72,
+        "subheading": "<p>Discover Joy: Your Ultimate Holiday Gift Destination.</p>",
+        "button_label": "Shop Now",
+        "show_bottom_bar": true,
+        "bottom_text": "Sustainable, ethically made clothes in sizes XXS to 6XL",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  ]
+}
+{% endschema %}

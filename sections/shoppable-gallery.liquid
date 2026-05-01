@@ -1,0 +1,1002 @@
+{%- liquid
+  assign section_id = 'ShoppableGallery-' | append: section.id
+-%}
+
+<div
+  id="{{ section_id }}"
+  class="shoppable-gallery"
+  style="
+    --sg-heading-size: {{ section.settings.heading_size }}px;
+    --sg-mobile-heading-size: {{ section.settings.mobile_heading_size }}px;
+    --sg-aspect-ratio: {{ section.settings.image_ratio }};
+    --sg-gap: {{ section.settings.grid_gap }}px;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="shoppable-gallery__inner">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="shoppable-gallery__heading">
+        {{- section.settings.heading | escape -}}
+      </h2>
+    {%- endif -%}
+
+    <div class="shoppable-gallery__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign product = all_products[block.settings.product]
+          assign has_product = false
+          if product != blank and block.settings.product != blank
+            assign has_product = true
+          endif
+        -%}
+
+        <div
+          class="shoppable-gallery__item"
+          data-block-id="{{ block.id }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="shoppable-gallery__image-wrap">
+
+            {%- comment -%} Grid image {%- endcomment -%}
+            {%- liquid
+              if block.settings.image != blank
+                assign grid_image = block.settings.image
+                assign grid_image_alt = block.settings.image.alt
+              elsif has_product and product.featured_image != blank
+                assign grid_image = product.featured_image
+                assign grid_image_alt = product.featured_image.alt
+              else
+                assign grid_image = nil
+              endif
+            -%}
+            {%- if grid_image != nil -%}
+              {{
+                grid_image
+                | image_url: width: 800
+                | image_tag:
+                  class: 'shoppable-gallery__img',
+                  widths: '400, 600, 800',
+                  sizes: '(min-width: 750px) 33vw, 50vw',
+                  loading: 'lazy',
+                  alt: grid_image_alt
+              }}
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'shoppable-gallery__img shoppable-gallery__img--placeholder' }}
+            {%- endif -%}
+
+            {%- if has_product -%}
+              {%- comment -%} Hotspot + button {%- endcomment -%}
+              <button
+                class="shoppable-gallery__hotspot"
+                style="left: {{ block.settings.hotspot_x }}%; top: {{ block.settings.hotspot_y }}%;"
+                aria-label="View {{ product.title | escape }}"
+                aria-expanded="false"
+                aria-controls="sg-popup-{{ block.id }}"
+                data-hotspot
+              >
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="11" cy="11" r="11" fill="#F8F8F8" fill-opacity="0.9"/>
+                  <path d="M11.3457 7.04175V15.5033" stroke="black" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/>
+                  <path d="M7.11523 11.2725H15.5768" stroke="black" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            {%- endif -%}
+
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</div>
+
+{%- comment -%} Popup cards — rendered outside the grid, fixed to viewport {%- endcomment -%}
+{%- for block in section.blocks -%}
+  {%- liquid
+    assign product = all_products[block.settings.product]
+    assign has_product = false
+    if product != blank and block.settings.product != blank
+      assign has_product = true
+    endif
+
+    assign color_option_pos = nil
+    assign size_option_pos = nil
+    if has_product
+      for option in product.options_with_values
+        assign opt_name = option.name | downcase
+        if opt_name == 'color' or opt_name == 'colour'
+          assign color_option_pos = option.position | minus: 1
+          assign color_option_values = option.values
+        endif
+        if opt_name == 'size'
+          assign size_option_pos = option.position | minus: 1
+          assign size_option_values = option.values
+        endif
+      endfor
+    endif
+  -%}
+
+  {%- if has_product -%}
+    <div
+      class="shoppable-gallery__popup"
+      id="sg-popup-{{ block.id }}"
+      role="dialog"
+      aria-label="{{ product.title | escape }}"
+      aria-hidden="true"
+      data-popup
+    >
+      {%- comment -%} Close button {%- endcomment -%}
+      <button class="sg-popup__close" aria-label="Close popup" data-popup-close>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1 1L11 11M11 1L1 11" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      {%- comment -%} Product info header {%- endcomment -%}
+      <div class="sg-popup__header">
+        <div class="sg-popup__thumb-wrap">
+          {%- if product.featured_image != blank -%}
+            {{
+              product.featured_image
+              | image_url: width: 200
+              | image_tag:
+                class: 'sg-popup__thumb',
+                widths: '100, 150, 200',
+                loading: 'lazy',
+                alt: product.featured_image.alt
+            }}
+          {%- elsif block.settings.image != blank -%}
+            {{
+              block.settings.image
+              | image_url: width: 200
+              | image_tag: class: 'sg-popup__thumb', loading: 'lazy'
+            }}
+          {%- endif -%}
+        </div>
+        <div class="sg-popup__meta">
+          <h3 class="sg-popup__title">{{ product.title | escape }}</h3>
+          <p class="sg-popup__price" data-sg-price>
+            {{- product.price | money -}}
+          </p>
+          <p class="sg-popup__desc">
+            {{- product.description | strip_html | truncate: 110 -}}
+          </p>
+        </div>
+      </div>
+
+      {%- comment -%} Color options {%- endcomment -%}
+      {%- if color_option_pos != nil and color_option_values.size > 0 -%}
+        <div class="sg-popup__option-group">
+          <span class="sg-popup__option-label">Color</span>
+          <div
+            class="sg-popup__color-group"
+            data-option-index="{{ color_option_pos }}"
+          >
+            {%- for val in color_option_values -%}
+              {%- liquid
+                assign color_lower = val | downcase | strip
+                case color_lower
+                  when 'blue'
+                    assign swatch_hex = '#1a56db'
+                  when 'black'
+                    assign swatch_hex = '#111111'
+                  when 'white'
+                    assign swatch_hex = '#e5e5e5'
+                  when 'red'
+                    assign swatch_hex = '#dc2626'
+                  when 'grey', 'gray'
+                    assign swatch_hex = '#9ca3af'
+                  when 'green'
+                    assign swatch_hex = '#16a34a'
+                  when 'navy'
+                    assign swatch_hex = '#1e3a5f'
+                  when 'pink'
+                    assign swatch_hex = '#ec4899'
+                  when 'yellow'
+                    assign swatch_hex = '#eab308'
+                  when 'brown'
+                    assign swatch_hex = '#92400e'
+                  else
+                    assign swatch_hex = 'transparent'
+                endcase
+              -%}
+              <button
+                class="sg-popup__color-btn{% if forloop.first %} is-active{% endif %}"
+                data-option-value="{{ val | escape }}"
+                style="--swatch: {{ swatch_hex }}"
+                type="button"
+              >{{ val | escape }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Size options {%- endcomment -%}
+      {%- if size_option_pos != nil and size_option_values.size > 0 -%}
+        <div class="sg-popup__option-group">
+          <span class="sg-popup__option-label">Size</span>
+          <div class="sg-popup__select-wrap">
+            <select
+              class="sg-popup__size-select"
+              data-option-index="{{ size_option_pos }}"
+              aria-label="Select size"
+            >
+              <option value="">Choose your size</option>
+              {%- for val in size_option_values -%}
+                <option value="{{ val | escape }}">{{ val | escape }}</option>
+              {%- endfor -%}
+            </select>
+            <span class="sg-popup__chevron" aria-hidden="true">
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L6 6L11 1" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Add to cart {%- endcomment -%}
+      <button
+        class="sg-popup__add-btn"
+        type="button"
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ product.first_available_variant.id }}"
+        data-variants="{{ product.variants | json | escape }}"
+        data-color-index="{{ color_option_pos | default: -1 }}"
+        data-size-index="{{ size_option_pos | default: -1 }}"
+      >
+        <span class="sg-popup__add-text">ADD TO CART</span>
+        <span class="sg-popup__add-arrow" aria-hidden="true">
+          <svg width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.75 4.77298L7.37629e-08 4.77298L-7.37629e-08 6.27298L0.75 6.27298L0.75 4.77298ZM25.2803 6.05331C25.5732 5.76042 25.5732 5.28554 25.2803 4.99265L20.5074 0.21968C20.2145 -0.073213 19.7396 -0.0732131 19.4467 0.21968C19.1538 0.512574 19.1538 0.987447 19.4467 1.28034L23.6893 5.52298L19.4467 9.76562C19.1538 10.0585 19.1538 10.5334 19.4467 10.8263C19.7396 11.1192 20.2145 11.1192 20.5074 10.8263L25.2803 6.05331ZM0.75 6.27298L24.75 6.27298L24.75 4.77298L0.75 4.77298L0.75 6.27298Z" fill="currentColor"/>
+          </svg>
+        </span>
+      </button>
+
+    </div>
+  {%- endif -%}
+{%- endfor -%}
+
+{%- comment -%} Backdrop — covers full viewport when popup is open {%- endcomment -%}
+<div class="sg-backdrop" aria-hidden="true" data-sg-backdrop></div>
+
+{% stylesheet %}
+  /* ─────────────────────────────────────────
+     SHOPPABLE GALLERY — SECTION
+  ───────────────────────────────────────── */
+  .shoppable-gallery {
+    font-family: "Jost", sans-serif;
+    background: #fff;
+  }
+
+  .shoppable-gallery__inner {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ── Heading ── */
+  .shoppable-gallery__heading {
+    font-family: "Lustria", serif;
+    font-size: var(--sg-heading-size, 30px);
+    font-weight: 400;
+    color: #111;
+    margin: 0 0 24px 0;
+    line-height: 1.2;
+  }
+
+  /* ── Grid ── */
+  .shoppable-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sg-gap, 8px);
+  }
+
+  /* ── Item ── */
+  .shoppable-gallery__item {
+    position: relative;
+  }
+
+  /* ── Image wrap ── */
+  .shoppable-gallery__image-wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--sg-aspect-ratio, 3/4);
+    background: #f5f5f5;
+  }
+
+  .shoppable-gallery__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .shoppable-gallery__img--placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Hotspot button ── */
+  .shoppable-gallery__hotspot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+  }
+
+  .shoppable-gallery__hotspot:hover {
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+
+  /* ── Popup card — fixed to viewport ── */
+  .shoppable-gallery__popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    z-index: 999;
+    overflow-y: auto;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  }
+
+  .shoppable-gallery__popup.is-open {
+    display: flex;
+  }
+
+  /* ── Close button ── */
+  .sg-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  /* ── Product header ── */
+  .sg-popup__header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-right: 20px;
+  }
+
+  .sg-popup__thumb-wrap {
+    flex-shrink: 0;
+    width: 120px;
+    height: 140px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .sg-popup__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sg-popup__meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sg-popup__title {
+    font-family: Jost, sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    margin: 0;
+    line-height: 1.3;
+}
+.sg-popup__price {
+  font-family: 'Lustria';
+    font-size: 16px;
+    font-weight: 400;
+    color: #000;
+    margin: 10px 0;
+}
+
+.sg-popup__desc {
+    font-weight: 300;
+    font-family: Jost, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #000000;
+    margin: 0;
+}
+
+  /* ── Option groups ── */
+  .sg-popup__option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sg-popup__option-label {
+    font-family: Jost, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #000000;
+    letter-spacing: .02em;
+}
+
+  /* ── Color buttons ── */
+  .sg-popup__color-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid #111;
+  }
+
+  .sg-popup__color-btn {
+    position: relative;
+    font-family: "Jost", sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #111;
+    background: #fff;
+    border: none;
+    border-left: 3px solid var(--swatch, transparent);
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .sg-popup__color-btn:not(:first-child) {
+    border-left-color: var(--swatch, transparent);
+    box-shadow: inset 1px 0 0 #111;
+  }
+
+  .sg-popup__color-btn.is-active {
+    background: #111;
+    color: #fff;
+  }
+
+  /* ── Size select ── */
+  .sg-popup__select-wrap {
+    position: relative;
+    border: 1px solid #111;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .sg-popup__size-select {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    font-family: "Jost", sans-serif;
+    font-size: 16px;
+    color: #000000;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    min-width: 0;
+    /* extend over the chevron column so clicking the arrow opens the dropdown */
+    width: 100%;
+  }
+
+  .sg-popup__chevron {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    border-left: 1px solid #111;
+    pointer-events: none;
+    background: #fff;
+  }
+
+  /* ── Add to cart button ── */
+  .sg-popup__add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    font-family: "Jost", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: auto;
+    transition: opacity 0.2s;
+  }
+
+  .sg-popup__add-btn:hover {
+    opacity: 0.85;
+  }
+
+  .sg-popup__add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .sg-popup__add-arrow {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Backdrop ── */
+  .sg-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+  }
+
+  .sg-backdrop.is-visible {
+    display: block;
+  }
+
+  /* ─────────────────────────────────────────
+     RESPONSIVE
+  ───────────────────────────────────────── */
+  @media screen and (max-width: 749px) {
+    .shoppable-gallery__inner {
+      padding: 0 16px;
+    }
+
+    .shoppable-gallery__heading {
+      font-size: var(--sg-mobile-heading-size, 24px);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .shoppable-gallery__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .sg-popup__add-btn {
+      padding: 14px 16px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .shoppable-gallery__inner {
+      padding: 0 12px;
+    }
+
+    .shoppable-gallery__grid {
+      gap: 4px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    // ── Helpers ──────────────────────────────────────────
+    function formatMoney(cents, moneyFormat) {
+      var amount = (cents / 100).toFixed(2);
+      if (moneyFormat && moneyFormat.includes('{{amount}}')) {
+        return moneyFormat.replace('{{amount}}', amount);
+      }
+      return amount + '€';
+    }
+
+    var backdrop = document.querySelector('[data-sg-backdrop]');
+
+    // ── Open / close popup ────────────────────────────────
+    function openPopup(popup, triggerBtn) {
+      closeAll();
+
+      popup.classList.add('is-open');
+      popup.setAttribute('aria-hidden', 'false');
+      triggerBtn.setAttribute('aria-expanded', 'true');
+
+      updateVariant(popup);
+
+      if (backdrop) backdrop.classList.add('is-visible');
+    }
+
+    function closePopup(popup) {
+      if (!popup) return;
+      popup.classList.remove('is-open');
+      popup.setAttribute('aria-hidden', 'true');
+
+      // Find the hotspot that triggered this popup and reset its aria state
+      var hotspot = document.querySelector('[aria-controls="' + popup.id + '"]');
+      if (hotspot) hotspot.setAttribute('aria-expanded', 'false');
+    }
+
+    function closeAll() {
+      document.querySelectorAll('.shoppable-gallery__popup.is-open').forEach(closePopup);
+      if (backdrop) backdrop.classList.remove('is-visible');
+    }
+
+    // ── Variant logic ─────────────────────────────────────
+    function updateVariant(popup) {
+      var addBtn = popup.querySelector('.sg-popup__add-btn');
+      if (!addBtn) return;
+
+      var rawVariants = addBtn.getAttribute('data-variants');
+      if (!rawVariants) return;
+
+      var variants;
+      try { variants = JSON.parse(rawVariants); } catch (e) { return; }
+
+      var colorIndex = parseInt(addBtn.getAttribute('data-color-index'), 10);
+      var sizeIndex  = parseInt(addBtn.getAttribute('data-size-index'), 10);
+
+      var selectedColor = null;
+      var selectedSize  = null;
+
+      var activeColorBtn = popup.querySelector('.sg-popup__color-btn.is-active');
+      if (activeColorBtn) selectedColor = activeColorBtn.getAttribute('data-option-value');
+
+      var sizeSelect = popup.querySelector('.sg-popup__size-select');
+      if (sizeSelect) selectedSize = sizeSelect.value || null;
+
+      // Find matching variant
+      var matched = null;
+      for (var i = 0; i < variants.length; i++) {
+        var v = variants[i];
+        var colorOk = (colorIndex < 0) || !selectedColor || (v.options[colorIndex] === selectedColor);
+        var sizeOk  = (sizeIndex < 0)  || !selectedSize  || (v.options[sizeIndex]  === selectedSize);
+        if (colorOk && sizeOk) {
+          matched = v;
+          break;
+        }
+      }
+
+      if (!matched && variants.length) matched = variants[0];
+
+      if (matched) {
+        addBtn.setAttribute('data-variant-id', matched.id);
+
+        var priceEl = popup.querySelector('[data-sg-price]');
+        if (priceEl) {
+          priceEl.textContent = formatMoney(matched.price);
+        }
+
+        var textEl = addBtn.querySelector('.sg-popup__add-text');
+        if (matched.available) {
+          addBtn.disabled = false;
+          if (textEl) textEl.textContent = 'ADD TO CART';
+        } else {
+          addBtn.disabled = true;
+          if (textEl) textEl.textContent = 'SOLD OUT';
+        }
+      }
+    }
+
+    // ── Add to cart ───────────────────────────────────────
+    function addToCart(addBtn) {
+      var variantId = parseInt(addBtn.getAttribute('data-variant-id'), 10);
+      if (!variantId) return;
+
+      var textEl = addBtn.querySelector('.sg-popup__add-text');
+      addBtn.disabled = true;
+      if (textEl) textEl.textContent = 'ADDING…';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
+      })
+      .then(function (res) {
+        if (res.ok) {
+          if (textEl) textEl.textContent = 'ADDED!';
+          refreshCartCount();
+          setTimeout(function () {
+            addBtn.disabled = false;
+            if (textEl) textEl.textContent = 'ADD TO CART';
+            window.location.href = '/cart';
+          }, 800);
+        } else {
+          return res.json().then(function (data) { throw new Error(data.description || 'Error'); });
+        }
+      })
+      .catch(function (err) {
+        if (textEl) textEl.textContent = err.message || 'ERROR';
+        setTimeout(function () {
+          addBtn.disabled = false;
+          if (textEl) textEl.textContent = 'ADD TO CART';
+        }, 2000);
+      });
+    }
+
+    function refreshCartCount() {
+      fetch('/cart.js')
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          var selectors = [
+            '[data-cart-count]',
+            '.cart-count',
+            '.cart-item-count',
+            '.header__cart-count',
+            '[data-header-cart-quantity]'
+          ];
+          document.querySelectorAll(selectors.join(',')).forEach(function (el) {
+            el.textContent = cart.item_count;
+          });
+          document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
+        })
+        .catch(function () {});
+    }
+
+    // ── Event delegation ──────────────────────────────────
+    document.addEventListener('click', function (e) {
+
+      // Hotspot click → open popup
+      var hotspot = e.target.closest('[data-hotspot]');
+      if (hotspot) {
+        e.stopPropagation();
+        var popupId = hotspot.getAttribute('aria-controls');
+        var popup = document.getElementById(popupId);
+        if (!popup) return;
+        if (popup.classList.contains('is-open')) {
+          closeAll();
+        } else {
+          openPopup(popup, hotspot);
+        }
+        return;
+      }
+
+      // Close button click → close popup
+      var closeBtn = e.target.closest('[data-popup-close]');
+      if (closeBtn) {
+        e.stopPropagation();
+        var popup = closeBtn.closest('[data-popup]');
+        closePopup(popup);
+        if (backdrop) backdrop.classList.remove('is-visible');
+        return;
+      }
+
+      // Color button click
+      var colorBtn = e.target.closest('.sg-popup__color-btn');
+      if (colorBtn) {
+        e.stopPropagation();
+        var group = colorBtn.closest('.sg-popup__color-group');
+        group.querySelectorAll('.sg-popup__color-btn').forEach(function (b) { b.classList.remove('is-active'); });
+        colorBtn.classList.add('is-active');
+        updateVariant(colorBtn.closest('[data-popup]'));
+        return;
+      }
+
+      // Add to cart click
+      var addBtn = e.target.closest('.sg-popup__add-btn');
+      if (addBtn) {
+        e.stopPropagation();
+        addToCart(addBtn);
+        return;
+      }
+
+      // Click inside popup → don't close
+      if (e.target.closest('[data-popup]')) {
+        e.stopPropagation();
+        return;
+      }
+
+      // Click on backdrop or outside any popup → close all
+      closeAll();
+    });
+
+    // Size select change
+    document.addEventListener('change', function (e) {
+      if (e.target.classList.contains('sg-popup__size-select')) {
+        var popup = e.target.closest('[data-popup]');
+        if (popup) updateVariant(popup);
+      }
+    });
+
+    // Backdrop click
+    if (backdrop) {
+      backdrop.addEventListener('click', function () {
+        closeAll();
+      });
+    }
+
+    // Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAll();
+    });
+
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Shoppable Gallery",
+  "tag": "section",
+  "class": "shoppable-gallery-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "gallery_item",
+      "name": "Gallery Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Lifestyle image"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked product"
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_x",
+          "label": "Horizontal position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "hotspot_y",
+          "label": "Vertical position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "default": 75
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tisso vison in the wild"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (desktop)",
+      "min": 18,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Heading size (mobile)",
+      "min": 18,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "4/5", "label": "Portrait (4:5)" },
+        { "value": "2/3", "label": "Portrait (2:3)" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Gap between images",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shoppable Gallery",
+      "category": "Image",
+      "settings": {
+        "heading": "Tisso vison in the wild",
+        "heading_size": 36,
+        "mobile_heading_size": 24,
+        "image_ratio": "3/4",
+        "grid_gap": 8,
+        "padding_top": 48,
+        "padding_bottom": 48
+      },
+      "blocks": [
+        { "type": "gallery_item", "settings": { "hotspot_x": 35, "hotspot_y": 75 } },
+        { "type": "gallery_item", "settings": { "hotspot_x": 55, "hotspot_y": 60 } },
+        { "type": "gallery_item", "settings": { "hotspot_x": 65, "hotspot_y": 35 } },
+        { "type": "gallery_item", "settings": { "hotspot_x": 30, "hotspot_y": 55 } },
+        { "type": "gallery_item", "settings": { "hotspot_x": 45, "hotspot_y": 70 } },
+        { "type": "gallery_item", "settings": { "hotspot_x": 70, "hotspot_y": 75 } }
+      ]
+    }
+  ]
+}
+{% endschema %}
