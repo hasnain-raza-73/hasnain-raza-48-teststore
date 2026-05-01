@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "hero_jVaWmY": {
       "type": "hero",
@@ -57,6 +58,7 @@
         "text_YLPk4p",
         "button_H9gpTf"
       ],
+      "disabled": true,
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
@@ -65,6 +67,7 @@
         "custom_mobile_media": false,
         "media_type_1_mobile": "image",
         "media_type_2_mobile": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -261,6 +264,7 @@
           ]
         }
       },
+      "disabled": true,
       "name": "Featured collection",
       "settings": {
         "collection": "all",
@@ -281,10 +285,114 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "gift_guide_TDen6x": {
+      "type": "gift-guide",
+      "name": "Gift Guide",
+      "settings": {
+        "show_top_bar": true,
+        "brand_name": "TISSO VISON",
+        "tagline": "Find the ideal gift for your loved ones.",
+        "nav_button_label": "Choose Gift",
+        "nav_button_url": "",
+        "top_bar_bg_color": "#FFFFFF",
+        "nav_button_color": "#f5e642",
+        "background_image": "shopify://shop_images/Group_1000008197.png",
+        "mobile_image": "shopify://shop_images/Frame.png",
+        "min_height": 85,
+        "overlay_opacity": 0,
+        "heading": "The Gift Guide",
+        "heading_size": 72,
+        "subheading": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>",
+        "mobile_subheading": "<p>Discover Joy: Your Ultimate Holiday Gift Destination.</p>",
+        "button_label": "Shop Now",
+        "button_url": "",
+        "mobile_heading_size": 30,
+        "mobile_subheading_size": 16,
+        "mobile_btn_font_size": 16,
+        "show_bottom_bar": true,
+        "bottom_text": "Sustainable, ethically made clothes in sizes XXS to 6XL",
+        "mobile_bottom_text": "Sustainable, ethically made activewear",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "shoppable_gallery_dQwweX": {
+      "type": "shoppable-gallery",
+      "blocks": {
+        "gallery_item_miMarU": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "black-leather-bag",
+            "hotspot_x": 65,
+            "hotspot_y": 59
+          }
+        },
+        "gallery_item_ppETUH": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "blue-silk-tuxedo",
+            "hotspot_x": 55,
+            "hotspot_y": 78
+          }
+        },
+        "gallery_item_UpfyER": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "chequered-red-shirt",
+            "hotspot_x": 59,
+            "hotspot_y": 16
+          }
+        },
+        "gallery_item_Jgj7y7": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "classic-leather-jacket",
+            "hotspot_x": 30,
+            "hotspot_y": 34
+          }
+        },
+        "gallery_item_PJRHCn": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "classic-varsity-top",
+            "hotspot_x": 45,
+            "hotspot_y": 31
+          }
+        },
+        "gallery_item_PYhYaQ": {
+          "type": "gallery_item",
+          "settings": {
+            "product": "dark-denim-top",
+            "hotspot_x": 70,
+            "hotspot_y": 75
+          }
+        }
+      },
+      "block_order": [
+        "gallery_item_miMarU",
+        "gallery_item_ppETUH",
+        "gallery_item_UpfyER",
+        "gallery_item_Jgj7y7",
+        "gallery_item_PJRHCn",
+        "gallery_item_PYhYaQ"
+      ],
+      "name": "Shoppable Gallery",
+      "settings": {
+        "heading": "Tisso vison in the wild",
+        "heading_size": 36,
+        "mobile_heading_size": 24,
+        "image_ratio": "3/4",
+        "grid_gap": 8,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "gift_guide_TDen6x",
+    "shoppable_gallery_dQwweX"
   ]
 }
